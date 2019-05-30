@@ -22,9 +22,70 @@ sector_emissions <- read_csv("HW4Data.csv")
 
 ## Plotting the raw data to see how it looks 
 
-carbon_plot <- ggplot(sector_emissions, aes(x = Abatement, y = MC_A)) +
+#Plot A
+
+carbon_plot_A <- ggplot(sector_emissions, aes(x = Abatement, y = MC_A)) +
   geom_point()
-carbon_plot
+carbon_plot_A
+
+#Plot B
+
+carbon_plot_B <- ggplot(sector_emissions, aes(x = Abatement, y = MC_B)) +
+  geom_point()
+carbon_plot_B
+
+#Plot C
+
+carbon_plot_C <- ggplot(sector_emissions, aes(x = Abatement, y = MC_C)) +
+  geom_point()
+carbon_plot_C
+
+#Plot D
+
+carbon_plot_D <- ggplot(sector_emissions, aes(x = Abatement, y = MC_D)) +
+  geom_point()
+carbon_plot_D
 
 ```
+
+```{r}
+
+#Question 1. Linear model for all scenarios
+
+emissions_lm <- lm(formula = Abatement ~ MC_A + MC_B + MC_C + MC_D, data = sector_emissions)
+emissions_lm
+
+summary(emissions_lm)
+
+# Linear model for A
+
+lm_A <- lm(formula = Abatement ~ MC_A, data = sector_emissions)
+lm_A
+
+summary(lm_A)
+
+# Linear model for B
+
+lm_B <- lm(formula = Abatement ~ MC_B, data = sector_emissions)
+lm_B
+
+summary(lm_B)
+
+# Linear model for C
+
+lm_C <- lm(formula = Abatement ~ MC_C, data = sector_emissions)
+lm_C
+
+summary(lm_C)
+
+# Linear model for D
+
+lm_D <- lm(formula = Abatement ~ MC_D, data = sector_emissions)
+lm_D
+
+summary(lm_D)
+
+
+```
+
 
