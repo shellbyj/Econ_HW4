@@ -20,7 +20,11 @@ sector_emissions <- read_csv("HW4Data.csv")
 
 ```{r}
 
-###
+## Plotting the raw data to see how it looks 
+
+carbon_plot <- ggplot(sector_emissions, aes(x = Abatement, y = MC_A)) +
+  geom_point()
+carbon_plot
 
 ```
 
