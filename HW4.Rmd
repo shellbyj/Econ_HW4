@@ -1,0 +1,26 @@
+---
+title: "Assignment 4"
+author: "Shellby Johnson_Kristan Culbert"
+date: "May 29, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+
+library(tidyverse)
+
+sector_emissions <- read_csv("HW4Data.csv")
+
+```
+
+```{r}
+
+###
+
+```
+
