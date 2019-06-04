@@ -18,6 +18,8 @@ sector_emissions <- read_csv("HW4Data.csv")
 
 ```
 
+
+#1 Regression of Marginal Cost of Abatement
 ```{r}
 
 ## Plotting the raw data to see how it looks 
@@ -88,4 +90,49 @@ summary(lm_D)
 
 ```
 
+```{r}
+
+#Create plots for each of the 4 sectors using their respective abatement cost functions
+
+#Regression line for Sector A
+
+Rline_A <- ggplot(sector_emissions, aes(x = Abatement, y = MC_A)) +
+  geom_point()+
+  geom_smooth(method = "lm")
+
+Rline_A
+
+#Regression line for Sector B
+Rline_B <- ggplot(sector_emissions, aes(x = Abatement, y = MC_B)) +
+  geom_point()+
+  geom_smooth(method = "lm")
+
+Rline_B
+
+#Regression line for Sector C
+
+Rline_C <- ggplot(sector_emissions, aes(x = Abatement, y = MC_C)) +
+  geom_point()+
+  geom_smooth(method = "lm")
+
+Rline_C
+
+#Regression line for Sector D
+
+Rline_D <- ggplot(sector_emissions, aes(x = Abatement, y = MC_D)) +
+  geom_point()+
+  geom_smooth(method = "lm")
+
+Rline_D
+
+```
+
+#2. WTP and Estimating Demand Curves
+
+```{r}
+
+WTP_A = lm_A$coefficients[2]*180 + lm_A$coefficients[1]
+WTP_A
+
+```
 
