@@ -61,28 +61,28 @@ summary(emissions_lm)
 
 # Linear model for A
 
-lm_A <- lm(formula = Abatement ~ MC_A, data = sector_emissions)
+lm_A <- lm(formula = MC_A ~ Abatement, data = sector_emissions)
 lm_A
 
 summary(lm_A)
 
 # Linear model for B
 
-lm_B <- lm(formula = Abatement ~ MC_B, data = sector_emissions)
+lm_B <- lm(formula = MC_B ~ Abatement, data = sector_emissions)
 lm_B
 
 summary(lm_B)
 
 # Linear model for C
 
-lm_C <- lm(formula = Abatement ~ MC_C, data = sector_emissions)
+lm_C <- lm(formula =  MC_C ~ Abatement, data = sector_emissions)
 lm_C
 
 summary(lm_C)
 
 # Linear model for D
 
-lm_D <- lm(formula = Abatement ~ MC_D, data = sector_emissions)
+lm_D <- lm(formula = MC_D ~ Abatement, data = sector_emissions)
 lm_D
 
 summary(lm_D)
@@ -133,6 +133,16 @@ Rline_D
 
 WTP_A = lm_A$coefficients[2]*180 + lm_A$coefficients[1]
 WTP_A
+
+WTP_B = lm_B$coefficients[2]*200 + lm_A$coefficients[1]
+WTP_B
+
+WTP_C = lm_A$coefficients[2]*220 + lm_A$coefficients[1]
+WTP_C
+
+WTP_D = lm_A$coefficients[2]*300 + lm_A$coefficients[1]
+WTP_D
+
 
 ```
 
