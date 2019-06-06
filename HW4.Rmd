@@ -131,17 +131,227 @@ Rline_D
 
 ```{r}
 
+##Find willingness to pay 
+
 WTP_A = lm_A$coefficients[2]*180 + lm_A$coefficients[1]
 WTP_A
+# Sector A would be willing to pay $95.19 for the first unit
 
 WTP_B = lm_B$coefficients[2]*200 + lm_A$coefficients[1]
 WTP_B
+# Sector B WTP = 31.10 for for first unit 
 
 WTP_C = lm_A$coefficients[2]*220 + lm_A$coefficients[1]
 WTP_C
+#Sector C WTP = $118.26 for first unit
 
 WTP_D = lm_A$coefficients[2]*300 + lm_A$coefficients[1]
 WTP_D
+# Sector D would be willing to pay $164.41 for first unit
+
+
+```
+```{r}
+
+#Derive demand curve for each sector 
+
+#### Sector A
+
+quantity_a <- seq(0,180, by=10) #pick numbers between 0 - 180 in increments of 10 
+quantity_a
+
+#Write function for demand curve for section A
+
+slope_a <- lm_A$coefficients[2]
+int_a <- lm_A$coefficients[1]
+  
+  
+d_a <- function(q){
+  (slope_a*(180-q)) + int_a
+}
+
+#Derive demand curve
+
+demand_a <- d_a(quantity_a) #generates y values for each of the x values (given as q)
+
+curve(d_a, from=0, to=180, xlab = "q", ylab = "Price")
+
+
+```
+```{r}
+#### Sector B
+
+quantity_b <- seq(0,180, by=10) #pick numbers between 0 - 180 in increments of 10 
+quantity_b
+
+#Write function for demand curve for section A
+slope_b <- lm_B$coefficients[2]
+int_b <- lm_B$coefficients[1]
+  
+  
+d_b <- function(q){
+  (slope_b*(180-q)) + int_b
+}
+
+#Derive demand curve
+
+demand_b <- d_b(quantity_b) #generates y values for each of the x values (given as q)
+
+curve(d_b, from=0, to=180, xlab = "q", ylab = "Price")
+
+
+```
+```{r}
+#### Sector C
+
+quantity_c <- seq(0,180, by=10) #pick numbers between 0 - 180 in increments of 10 
+quantity_c
+
+#Write function for demand curve for section A
+slope_c <- lm_C$coefficients[2]
+int_c <- lm_C$coefficients[1]
+  
+  
+d_c <- function(q){
+  (slope_c*(180-q)) + int_c
+}
+
+#Derive demand curve
+
+demand_c <- d_c(quantity_c) #generates y values for each of the x values (given as q)
+
+curve(d_c, from=0, to=180, xlab = "q", ylab = "Price")
+
+
+```
+
+```{r}
+#### Sector D
+
+quantity_d <- seq(0,180, by=10) #pick numbers between 0 - 180 in increments of 10 
+quantity_d
+
+#Write function for demand curve for section A
+slope_d <- lm_D$coefficients[2]
+int_d <- lm_D$coefficients[1]
+  
+  
+d_d <- function(q){
+  (slope_d*(180-q)) + int_d
+}
+
+#Derive demand curve
+
+demand_d <- d_b(quantity_b) #generates y values for each of the x values (given as q)
+
+curve(d_d, from=0, to=180, xlab = "q", ylab = "Price")
+
+
+```
+
+3. Find total cost of (a) meeting target in country X, (b) cost/benefit to each sector, (c) tax revenue generated
+
+Part a: Cap on carbon 
+```{r}
+#Part 1A. Total cost of abatement in country X
+
+# Write abatement curve functions for each sector and set q as 100
+
+#Sector A: 
+
+abate_a <- function(q){
+  (slope_a*q) + int_a
+}
+cost_a_100 <- abate_a(100) # generates the cost of abatement for sector
+
+#Sector B: 
+
+abate_b <- function(q){
+  (slope_b*q) + int_b
+}
+cost_b_100 <- abate_b(100) 
+
+#Sector C: 
+
+abate_c <- function(q){
+  (slope_c*q) + int_c
+}
+cost_c_100 <- abate_c(100) 
+
+# Exclude D because it is not in this country
+
+```
+
+```{r}
+#Part 2b: Integrate to find the area under the curve (the cost of abatement from 0-100)
+areaa_100 <- integrate(abate_a, lower = 0, upper = 100)$value #Cost of abatement for Sector A = $2019.76
+
+areab_100 <- integrate(abate_b, lower = 0, upper = 100)$value #Cost of abatement Sector B = $1925.49
+
+areac_100 <- integrate(abate_c, lower = 0, upper = 100)$value #Cost of abatement Sector C = $2753.63
+
+#Part 3 Add all areas together to find the total cost of abating 100 units from each sector
+totalcost_100 <- areaa_100 + areab_100 + areac_100 #Total cost of abatement from sectors A, B, C = $6698.88
+
+##Part 3c. There is no tax revenue with a carbon cap.
+
+```
+ 
+
+Part 2. Tax on Carbon
+```{r}
+#Calculate the aggregate supply curve 
+
+Mag <- (1/lm_A$coefficients[2])+(1/lm_B$coefficients[2])+(1/lm_C$coefficients[2])
+
+Bag <- (-(lm_A$coefficients[1]/lm_B$coefficients[2])-(lm_B$coefficients[1]/lm_B$coefficients[2])-(lm_C$coefficients[1]/lm_C$coefficients[2]))
+
+#Define functions for supply curve for sectors A, B, C
+supply_A = function(x){
+  (x - lm_A$coefficients[1])/(lm_A$coefficients[2])
+}
+
+supply_B = function(x){
+  (x - lm_B$coefficients[1])/(lm_B$coefficients[2])
+}
+
+supply_C = function(x){
+  (x - lm_C$coefficients[1])/(lm_C$coefficients[2])
+}
+
+# Combine supply curves to form aggregate curve
+
+agsupply = function(x){
+  (x+Bag)/Mag
+}
+
+taxprice = agsupply(334)
+taxprice # 42.96527
+
+supply_A(taxprice)+
+  supply_B(taxprice)+
+  supply_C(taxprice) #328.4545
+
+```
+
+
+Part 3. Cap and trade (A - c only)
+
+```{r}
+sectorA_ab = supply_A(taxprice) #Sector A abatement
+sectorB_ab = supply_B(taxprice) #Sector B abatement
+sectorC_ab = supply_C(taxprice) #Sector C abatement 
+
+if (sectorA_abatement > 100) {
+  
+} else
+
+```
+
+
+```{r}
+
+
 
 
 ```
