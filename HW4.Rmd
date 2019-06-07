@@ -49,15 +49,9 @@ carbon_plot_D <- ggplot(sector_emissions, aes(x = Abatement, y = MC_D)) +
 carbon_plot_D
 
 ```
-
+Question #1
 ```{r}
 
-#Question 1. Linear model for all scenarios
-
-emissions_lm <- lm(formula = Abatement ~ MC_A + MC_B + MC_C + MC_D, data = sector_emissions)
-emissions_lm
-
-summary(emissions_lm)
 
 # Linear model for A
 
@@ -278,7 +272,11 @@ abate_c <- function(q){
 }
 cost_c_100 <- abate_c(100) 
 
-# Exclude D because it is not in this country
+# Exclude D because it is not in this country, but we'll define it's abatement curve anyway because we'll need it later in 4
+
+abate_d <- function(q){
+  (slope_d*q) + int_d
+}
 
 ```
 
@@ -298,61 +296,173 @@ totalcost_100 <- areaa_100 + areab_100 + areac_100 #Total cost of abatement from
 ```
  
 
-Part 2. Tax on Carbon
+Part 3b. Tax on Carbon
+
 ```{r}
-#Calculate the aggregate supply curve 
 
-Mag <- (1/lm_A$coefficients[2])+(1/lm_B$coefficients[2])+(1/lm_C$coefficients[2])
+# first rearrange supply curves
 
-Bag <- (-(lm_A$coefficients[1]/lm_B$coefficients[2])-(lm_B$coefficients[1]/lm_B$coefficients[2])-(lm_C$coefficients[1]/lm_C$coefficients[2]))
+A_rearrange <- function(y){(1/lm_A$coefficients[2])*(-lm_A$coefficients[1] + y)}
 
-#Define functions for supply curve for sectors A, B, C
-supply_A = function(x){
-  (x - lm_A$coefficients[1])/(lm_A$coefficients[2])
-}
+B_rearrange <- function(y){(1/lm_B$coefficients[2])*(-lm_B$coefficients[1] + y)}
 
-supply_B = function(x){
-  (x - lm_B$coefficients[1])/(lm_B$coefficients[2])
-}
+C_rearrange <- function(y){(1/lm_C$coefficients[2])*(-lm_C$coefficients[1] + y)}
 
-supply_C = function(x){
-  (x - lm_C$coefficients[1])/(lm_C$coefficients[2])
-}
+#ag_supply_country_X2 <- function(y){lm_A_rearrange(y) + lm_B_rearrange(y) + lm_B_rearrange(y)}
 
-# Combine supply curves to form aggregate curve
+ag_intercept <- (-lm_A$coefficients[1]/lm_A$coefficients[2]) + (-lm_B$coefficients[1]/lm_B$coefficients[2]) + (-lm_C$coefficients[1]/lm_C$coefficients[2])
 
-agsupply = function(x){
-  (x+Bag)/Mag
-}
+ag_slope <- (1/lm_A$coefficients[2]) + (1/lm_B$coefficients[2]) + (1/lm_C$coefficients[2])
 
-taxprice = agsupply(334)
-taxprice # 42.96527
+ag_supply_country_X <- function(x){(-ag_intercept/ag_slope) + (x/ag_slope)}
 
-supply_A(taxprice)+
-  supply_B(taxprice)+
-  supply_C(taxprice) #328.4545
+taxprice <- ag_supply_country_X(300)
+
+A_rearrange(taxprice) + B_rearrange(taxprice) + C_rearrange(taxprice)
+
+A_abate <- A_rearrange(taxprice) # 83.33489 #how many tons of carbon they would abate at the tax price, $39.40
+B_abate <- B_rearrange(taxprice) # 151.4956
+C_abate <- C_rearrange(taxprice) # 65.16953 
+
+A_tax_abatementcost <- integrate(abate_a,lower = 0, upper = A_abate) 
+
+TC_A_tax <- A_tax_abatementcost$value + (180 - A_abate)*taxprice   
+#  5093.786 
+
+B_tax_abatementcost <- integrate(abate_b,lower = 0, upper = B_abate) 
+
+TC_B_tax <- B_tax_abatementcost$value + (200 - B_abate)*taxprice   
+#  5604.635 
+
+C_tax_abatementcost <- integrate(abate_c,lower = 0, upper = C_abate) 
+
+TC_C_tax <- C_tax_abatementcost$value + (220 - C_abate)*taxprice   
+#  7009.365  
+
+TC_country_tax <- TC_C_tax + TC_B_tax + TC_A_tax
+#  17707.79
+
+#tax revenue generated
+
+tax_rev <- (180 - A_abate)*taxprice + (200 - B_abate)*taxprice  + (220 - C_abate)*taxprice 
+#  11827.97 
 
 ```
 
-
-Part 3. Cap and trade (A - c only)
-
+Part 3c. Cap & Trade
 ```{r}
-sectorA_ab = supply_A(taxprice) #Sector A abatement
-sectorB_ab = supply_B(taxprice) #Sector B abatement
-sectorC_ab = supply_C(taxprice) #Sector C abatement 
 
-if (sectorA_abatement > 100) {
-  
-} else
+TC_A_captrade <- A_tax_abatementcost$value + (100 - A_abate)*taxprice
+# 1939.66
 
+TC_B_captrade <- B_tax_abatementcost$value + (100 - B_abate)*taxprice
+#  1661.977
+
+TC_C_captrade <- C_tax_abatementcost$value + (100 - C_abate)*taxprice
+#  2278.176 
+
+TC_country_captrade <- TC_A_captrade + TC_B_captrade + TC_C_captrade #total cost of all sectors
+#  5879.812 
+
+# no tax revenue
+
+#Country A: Needs to buy ~17 credits (16.66511)
+
+#Country B: Could sell 51.4956 credits
+
+#Country C: emitting 154.83047 but only has 120, so they would need to buy 34.83047 credits
 ```
 
 
+Question #4
+```{r}
+A_rearrange <- function(y){(1/lm_A$coefficients[2])*(-lm_A$coefficients[1] + y)}
+B_rearrange <- function(y){(1/lm_B$coefficients[2])*(-lm_B$coefficients[1] + y)}
+C_rearrange <- function(y){(1/lm_C$coefficients[2])*(-lm_C$coefficients[1] + y)}
+D_rearrange <- function(y){(1/lm_D$coefficients[2])*(-lm_D$coefficients[1] + y)}
+
+#ag_supply_country_X2 <- function(y){A_rearrange(y) + B_rearrange(y) + C_rearrange(y)}
+
+ag_intercept_inter <- (-lm_A$coefficients[1]/lm_A$coefficients[2]) + (-lm_B$coefficients[1]/lm_B$coefficients[2]) + (-lm_C$coefficients[1]/lm_C$coefficients[2]) + (-lm_D$coefficients[1]/lm_D$coefficients[2])
+
+ag_slope_inter <- (1/lm_A$coefficients[2]) + (1/lm_B$coefficients[2]) + (1/lm_C$coefficients[2]) + (1/lm_D$coefficients[2])
+
+ag_supply_country_X_Y <- function(x){(-ag_intercept_inter/ag_slope_inter) + (x/ag_slope_inter)}
+
+taxprice_inter <- ag_supply_country_X_Y(300)
+
+A_rearrange(taxprice_inter) + B_rearrange(taxprice_inter) + C_rearrange(taxprice_inter) + D_rearrange(taxprice_inter)
+
+A_abate_inter <- A_rearrange(taxprice_inter) # 66.65079 
+B_abate_inter <- B_rearrange(taxprice_inter) # 103.0711
+C_abate_inter <- C_rearrange(taxprice_inter) #  52.89119  
+D_abate_inter <- D_rearrange(taxprice_inter) # 77.3869 
+
+A_tax_abatementcost_inter <- integrate(abate_a, lower = 0, upper = A_abate_inter) 
+#TC_A_tax_inter <- A_tax_abatementcost_inter$value + (cp_A - A_abate_inter)*taxprice_inter  
+#  4083.188 
+
+B_tax_abatementcost_inter <- integrate(abate_b, lower = 0, upper = B_abate_inter) 
+#TC_B_tax_inter <- B_tax_abatementcost_inter$value + (cp_B - B_abate_inter)*taxprice_inter   
+#  4904.803 
+
+C_tax_abatementcost_inter <- integrate(abate_c, lower = 0, upper = C_abate_inter) 
+#TC_C_tax_inter <- C_tax_abatementcost_inter$value + (cp_C - C_abate_inter)*taxprice_inter   
+#   5460.18 
+
+#TC_country_X_tax_inter <- TC_C_tax_inter + TC_B_tax_inter + TC_A_tax_inter
+#   14448.17 
+
+D_abatementcost_inter <- integrate(abate_d, lower = 0, upper = D_abate_inter) 
+
+
+
+```
+
+Question 4 Continued
 ```{r}
 
+TC_A_captrade_inter <- A_tax_abatementcost_inter$value + (100 - A_abate_inter)*taxprice_inter
+#  1698.989 
 
+TC_B_captrade_inter <- B_tax_abatementcost_inter$value + (100 - B_abate_inter)*taxprice_inter
+#  1924.554 
 
+TC_C_captrade_inter <- C_tax_abatementcost_inter$value + (100 - C_abate_inter)*taxprice_inter
+# 1883.88 
+
+TC_D_captrade_inter <- D_abatementcost_inter$value + (0 - D_abate_inter)*taxprice_inter
+# -778.3183 
+
+TC_country_X_captradeinter <- TC_A_captrade_inter + TC_B_captrade_inter + TC_C_captrade_inter
+
+#  5507.423 
+
+# the value for country x is a lower cost then under cap and trade for just their country
+# no tax revenue
+
+```
+
+Questoin
+```{r}
+
+#Question #5
+
+A_emissions <- 180 - A_abate_inter
+B_emissions <- 200 - B_abate_inter
+C_emissions <- 220 - C_abate_inter
+X_emissions <-A_emissions + B_emissions + C_emissions
+#  377.3869 
+Y_emissions <- 300 - D_abate_inter
+#  222.6131 
+
+#a. Country X would have 300 tons of local air pollution in a local cap and trade market
+# Country Y would also emit 300 tons becasue that is the cap for that sector
+
+#b In country X, we can find the amount of local air pollution by adding up all the emissions for each sector, which is 377.3869 tons of air pollution; country Y would have 222.6131 tons
+
+#c For country X: Implement the cap and trade program for economic reasons, but this will create more local air pollution. The local air pollution goes up from 300 to 377 if they include country Y in the cap and trade market. So is it worth it?
+#Country Y would benefit from joining the cap and trade market with Country X becasue their air pollution goes down from 300 to 222.6131. 
 
 ```
 
