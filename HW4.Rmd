@@ -14,6 +14,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 
+devtools::install_github("dill/beyonce") #use Beyonce style palette (found at: https://github.com/dill/beyonce)
+library(beyonce) #yaaas
+
 sector_emissions <- read_csv("HW4Data.csv")
 
 ```
@@ -242,6 +245,40 @@ curve(d_d, from=0, to=180, xlab = "q", ylab = "Price")
 
 
 ```
+```{r}
+#Plot demand for all sectors
+
+demand_plot <-ggplot(data.frame(x=c(0,200)))+
+  stat_function(fun=lm_A, aes(color = "A"))+
+  stat_function(fun=lm_B, aes(color = "B"))+
+  stat_function(fun=lm_C, aes(color = "C"))+
+  stat_function(fun=lm_D, aes(color = "D"))+
+  scale_x_continuous(limits = c(0,400), expand = c(0,0))+
+  scale_y_continuous(limits = c(0,200), expand = c(0,0))+
+  labs(fil = "", 
+       color = "Sector", 
+       x = "Carbon Demand (in tons of CO2)",
+       y = "Price ($/ton)",
+       title = "Carbon Emission Demand by Sector")+
+  theme_classic() +
+  scale_color_manual(values = beyonce_palette(111), name = "Sector", labels = c("A", "B", "C", "D")) +
+  theme(plot.title = element_text(hjust = 0.5))
+demand_plot
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
 
 3. Find total cost of (a) meeting target in country X, (b) cost/benefit to each sector, (c) tax revenue generated
 
