@@ -124,7 +124,9 @@ Rline_D
 
 ```
 
+
 #2. WTP and Estimating Demand Curves
+
 
 ```{r}
 
@@ -245,38 +247,6 @@ curve(d_d, from=0, to=180, xlab = "q", ylab = "Price")
 
 
 ```
-```{r}
-#Plot demand for all sectors
-
-demand_plot <-ggplot(data.frame(x=c(0,200)))+
-  stat_function(fun=lm_A, aes(color = "A"))+
-  stat_function(fun=lm_B, aes(color = "B"))+
-  stat_function(fun=lm_C, aes(color = "C"))+
-  stat_function(fun=lm_D, aes(color = "D"))+
-  scale_x_continuous(limits = c(0,400), expand = c(0,0))+
-  scale_y_continuous(limits = c(0,200), expand = c(0,0))+
-  labs(fil = "", 
-       color = "Sector", 
-       x = "Carbon Demand (in tons of CO2)",
-       y = "Price ($/ton)",
-       title = "Carbon Emission Demand by Sector")+
-  theme_classic() +
-  scale_color_manual(values = beyonce_palette(111), name = "Sector", labels = c("A", "B", "C", "D")) +
-  theme(plot.title = element_text(hjust = 0.5))
-demand_plot
-
-
-
-
-
-
-
-
-
-```
-
-
-
 
 
 
@@ -316,6 +286,28 @@ abate_d <- function(q){
 }
 
 ```
+
+```{r}
+#Plotting all 4 abatement curves in the same graph
+
+abatement_plot <-ggplot(data.frame(x=c(0,200)))+
+  stat_function(fun=abate_a, aes(color = "A"))+
+  stat_function(fun=abate_b, aes(color = "B"))+
+  stat_function(fun=abate_c, aes(color = "C"))+
+  stat_function(fun=abate_d, aes(color = "D"))+
+  scale_x_continuous(limits = c(0,400), expand = c(0,0))+
+  scale_y_continuous(limits = c(0,200), expand = c(0,0))+
+  labs(fill = "", 
+       color = "Sector", 
+       x = "Carbon Abated (tons of CO2)",
+       y = "Price ($/ton)",
+       title = "Abatement Cost Curves for Each Sector")+
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5))
+abatement_plot
+
+```
+
 
 ```{r}
 #Part 2b: Integrate to find the area under the curve (the cost of abatement from 0-100)
@@ -480,7 +472,7 @@ TC_country_X_captradeinter <- TC_A_captrade_inter + TC_B_captrade_inter + TC_C_c
 
 ```
 
-Questoin
+Question
 ```{r}
 
 #Question #5
