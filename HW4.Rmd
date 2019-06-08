@@ -248,6 +248,25 @@ curve(d_d, from=0, to=180, xlab = "q", ylab = "Price")
 
 ```
 
+```{r}
+
+demand_plot <-ggplot(data.frame(x=c(0,200)))+
+  stat_function(fun=d_a, aes(color = "A"))+
+  stat_function(fun=d_b, aes(color = "B"))+
+  stat_function(fun=d_c, aes(color = "C"))+
+  stat_function(fun=d_d, aes(color = "D"))+
+  scale_x_continuous(limits = c(0,400), expand = c(0,0))+
+  scale_y_continuous(limits = c(0,200), expand = c(0,0))+
+  labs(fill = "", 
+       color = "Sector", 
+       x = "Demand for Carbon (tons of CO2)",
+       y = "Price ($/ton)",
+       title = "Carbon Demand Curves for Each Sector")+
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5))
+demand_plot
+
+```
 
 
 3. Find total cost of (a) meeting target in country X, (b) cost/benefit to each sector, (c) tax revenue generated
